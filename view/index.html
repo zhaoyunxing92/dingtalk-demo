@@ -7,7 +7,8 @@
 </head>
 <body>
 <div class="container">
-    <h1>{{.name}}</h1>
+    <h1>{{.title}}</h1>
+
     <div id="login_container"></div>
 </div>
 </body>
@@ -15,7 +16,7 @@
     (function () {
         DDLogin({
             id: "login_container",
-            goto: {{.redirect}},
+            goto: {{.goto}},
             style: "border:none;background-color:#FFFFFF;",
             width: "365",
             height: "400"
@@ -27,8 +28,8 @@
             //获取钉钉扫码返回的code
             if (origin === "https://login.dingtalk.com") {
                 let code = event.data;
-                let url = "https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=dingoacufxw1nlqtz0adsw&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=REDIRECT_URI&loginTmpCode="+code;
-                window.location.href = url;
+                console.log(event)
+                window.location.href = {{.url}}+"&loginTmpCode=" + code;
             }
         };
         if (typeof window.addEventListener != 'undefined') {

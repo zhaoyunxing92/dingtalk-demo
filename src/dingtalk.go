@@ -2,36 +2,34 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"gopkg.in/ini.v1"
-	"log"
+	"github.com/zhaoyunxing90/dingtalk-demo/src/handlers"
+	"github.com/zhaoyunxing90/dingtalk-demo/src/model"
 	"net/http"
 )
 
 func main() {
-	cfg, err := ini.Load("./config/cfg.ini")
-
-	if err != nil {
-		log.Fatal("load dingtalk error", err)
-	}
 
 	rout := gin.Default()
 	rout.LoadHTMLGlob("./view/**")
 	//rout.Static("static","./static")
 	rout.StaticFile("/favicon.ico", "./favicon.ico")
 
-	rout.GET("/", func(context *gin.Context) {
-		redirect := cfg.Section("dingtalk").Key("goto").String()
-		context.HTML(http.StatusOK, "index.html", gin.H{"title": "钉钉扫码登录", "redirect": redirect})
+	/**
+	  首页
+	*/
+	rout.GET("/config", func(context *gin.Context) {
+		config := model.NewDingTalkConfig()
+		context.JSON(http.StatusOK, gin.H{"config": config})
 	})
 
 	/**
+	  首页
+	*/
+	rout.GET("/", handlers.Home)
+	/**
 	钉钉扫码登录
 	*/
-	rout.GET("/scan/login", func(cxt *gin.Context) {
-		code := cxt.Query("code")
-		log.Println(code)
+	rout.GET("/scan/login", handlers.CodeLogin)
 
-		cxt.HTML(http.StatusOK, "succeed.html", gin.H{"title": "登录成功"})
-	})
-	rout.Run(":8100")
+	_ = rout.Run(":8100")
 }
