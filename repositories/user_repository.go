@@ -2,7 +2,9 @@ package repositories
 
 import (
 	"context"
-	"github.com/zhaoyunxing90/dingtalk-demo/models"
+	"errors"
+	"fmt"
+	"github.com/zhaoyunxing92/dingtalk-demo/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,7 +14,7 @@ import (
 	"time"
 )
 
-type UserRepository interface {
+type IUserRepository interface {
 	/**
 	连接数据库
 	*/
@@ -33,10 +35,15 @@ type UserRepository interface {
 	/**
 	根据openid获取用户
 	*/
-	//SelectByOpenId(string) (*models.User, error)
+	SelectByOpenId(string) (*models.User, error)
+
+	/**
+	根据unionId获取用户
+	*/
+	SelectByUnionId(string) (*models.User, error)
 }
 
-type UserManager struct {
+type UserRepository struct {
 	/**
 	集合名称
 	*/
@@ -45,20 +52,26 @@ type UserManager struct {
 	配置地址
 	*/
 	cfg string
-
 	/**
 	集合对象
 	*/
 	coll *mongo.Collection
 }
 
-func NewUserRepository(cfg string) UserRepository {
+func NewUserRepository(coll *mongo.Collection) IUserRepository {
+	return &UserRepository{"user", "", coll}
+}
 
-	return &UserManager{"user", cfg, nil}
+/**
+基于配置文件构建
+*/
+func NewUserRepositoryCfg(cfg string) IUserRepository {
+
+	return &UserRepository{"user", cfg, nil}
 }
 
 // 连接
-func (manger *UserManager) Conn() (err error) {
+func (manger *UserRepository) Conn() (err error) {
 
 	if manger.coll == nil {
 		cfg, err := ini.Load(manger.cfg)
@@ -79,7 +92,7 @@ func (manger *UserManager) Conn() (err error) {
 }
 
 // 添加
-func (manger *UserManager) Insert(user *models.User) (id string, err error) {
+func (manger *UserRepository) Insert(user *models.User) (id string, err error) {
 	//if err = manger.Conn(); err == nil {
 	//	return
 	//}
@@ -91,18 +104,23 @@ func (manger *UserManager) Insert(user *models.User) (id string, err error) {
 	return res.InsertedID.(primitive.ObjectID).Hex(), err
 }
 
-// 添加
-func (manger *UserManager) SelectById(id string) (user *models.User, err error) {
+// 根据主键id查询
+func (manger *UserRepository) SelectById(id string) (user *models.User, err error) {
 	//if err = manger.Conn(); err == nil {
 	//	return user, nil
 	//}
 	oldId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return
+		return nil, errors.New(fmt.Sprintf("id:%s不合法", id))
 	}
 	filter := bson.M{"_id": bsonx.ObjectID(oldId)}
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = manger.coll.FindOne(ctx, filter).Decode(&user)
+	result := manger.coll.FindOne(ctx, filter)
+	// 判断是否存在
+	if result.Err() != nil {
+		return nil, errors.New("not fount")
+	}
+	err = result.Decode(&user)
 	if err != nil {
 		return
 	}
@@ -113,11 +131,40 @@ func (manger *UserManager) SelectById(id string) (user *models.User, err error) 
 https://godoc.org/go.mongodb.org/mongo-driver/mongo#Collection.UpdateOne
 */
 // 根据id更新
-func (manger *UserManager) Update(user *models.User) (result *mongo.UpdateResult, err error) {
+func (manger *UserRepository) Update(user *models.User) (result *mongo.UpdateResult, err error) {
 	// 存在就修改否则就插入
 	opts := options.Update().SetUpsert(true)
 	filter := bson.M{"_id": user.GetId()}
 	update := bson.D{{"$set", user}}
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	return manger.coll.UpdateOne(ctx, filter, update, opts)
+}
+
+// 根据openId获取用户
+func (manger *UserRepository) SelectByOpenId(openid string) (user *models.User, err error) {
+	// 存在就修改否则就插入
+	filter := bson.M{"openid": openid}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = manger.coll.FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// 根据unionId获取用户
+func (manger *UserRepository) SelectByUnionId(unionid string) (user *models.User, err error) {
+	// 存在就修改否则就插入
+	filter := bson.M{"unionid": unionid}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	result := manger.coll.FindOne(ctx, filter)
+	// 判断是否存在
+	if result.Err() != nil {
+		return nil, errors.New("not fount")
+	}
+	err = result.Decode(&user)
+	if err != nil {
+		return
+	}
+	return
 }

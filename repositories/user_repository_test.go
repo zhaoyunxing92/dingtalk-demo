@@ -3,7 +3,7 @@ package repositories
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/zhaoyunxing90/dingtalk-demo/models"
+	"github.com/zhaoyunxing92/dingtalk-demo/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"testing"
 	"time"
@@ -11,7 +11,7 @@ import (
 
 func TestUserManager_Insert(t *testing.T) {
 
-	repository := NewUserRepository("D:/github/go/dingtalk-demo/cfg.ini")
+	repository := NewUserRepositoryCfg("D:/github/go/dingtalk-demo/cfg.ini")
 	err := repository.Conn()
 	if err != nil {
 		t.Fatal(err)
@@ -26,7 +26,7 @@ func TestUserManager_Insert(t *testing.T) {
 }
 
 func TestUserManager_SelectById(t *testing.T) {
-	repository := NewUserRepository("D:/github/go/dingtalk-demo/cfg.ini")
+	repository := NewUserRepositoryCfg("D:/github/go/dingtalk-demo/cfg.ini")
 	err := repository.Conn()
 	if err != nil {
 		t.Fatal(err)
@@ -44,7 +44,7 @@ func TestUserManager_SelectById(t *testing.T) {
 }
 
 func TestUserManager_Update(t *testing.T) {
-	repository := NewUserRepository("D:/github/go/dingtalk-demo/cfg.ini")
+	repository := NewUserRepositoryCfg("D:/github/go/dingtalk-demo/cfg.ini")
 	err := repository.Conn()
 	if err != nil {
 		t.Fatal(err)

@@ -1,4 +1,4 @@
-module github.com/zhaoyunxing90/dingtalk-demo
+module github.com/zhaoyunxing92/dingtalk-demo
 
 go 1.14
 

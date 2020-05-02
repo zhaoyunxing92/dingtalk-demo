@@ -3,8 +3,8 @@ package handlers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/zhaoyunxing90/dingtalk-demo/src/model"
-	"github.com/zhaoyunxing90/dingtalk-demo/src/tools/dingtalk"
+	"github.com/zhaoyunxing92/dingtalk-demo/src/model"
+	"github.com/zhaoyunxing92/dingtalk-demo/src/tools/dingtalk"
 	"log"
 	"net/http"
 	"net/url"

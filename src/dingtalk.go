@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/zhaoyunxing90/dingtalk-demo/src/handlers"
-	"github.com/zhaoyunxing90/dingtalk-demo/src/model"
+	"github.com/zhaoyunxing92/dingtalk-demo/src/handlers"
+	"github.com/zhaoyunxing92/dingtalk-demo/src/model"
 	"net/http"
 )
 

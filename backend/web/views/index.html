@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{.title}}</title>
+    <script src="https://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>{{.title}}</h1>
+
+    <div id="login_container"></div>
+</div>
+</body>
+<script>
+    (function () {
+        DDLogin({
+            id: "login_container",
+            goto: {{.goto}},
+            style: "border:none;background-color:#FFFFFF;",
+            width: "365",
+            height: "400"
+        });
+
+        let handleMessage = function (event) {
+            let origin = event.origin;
+            console.log("origin", event.origin);
+            //获取钉钉扫码返回的code
+            if (origin === "https://login.dingtalk.com") {
+                let code = event.data;
+                console.log(event)
+                window.location.href = {{.url}}+"&loginTmpCode=" + code;
+            }
+        };
+        if (typeof window.addEventListener != 'undefined') {
+            window.addEventListener('message', handleMessage, false);
+        } else if (typeof window.attachEvent != 'undefined') {
+            window.attachEvent('onmessage', handleMessage);
+        }
+    })()
+</script>
+<style>
+    .container {
+        text-align: center;
+    }
+</style>
+</html>

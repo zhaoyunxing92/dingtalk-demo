@@ -6,7 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/zhaoyunxing90/dingtalk-demo/src/model"
+	"github.com/zhaoyunxing92/dingtalk-demo/src/model"
 	"io/ioutil"
 	"log"
 	"net/http"

@@ -7,6 +7,9 @@ import (
 )
 
 type User struct {
+	/**
+	组件id
+	*/
 	Id primitive.ObjectID `json:"id" bson:"_id"`
 	/**
 	状态
@@ -49,6 +52,10 @@ type User struct {
 	*/
 	Position string `json:"position"`
 	/**
+	版本
+	*/
+	Version int `json:"version"`
+	/**
 	创建时间
 	*/
 	CreateTime string `json:"createTime"`
@@ -74,6 +81,5 @@ func (user *User) SetId(id string) {
 获取id
 */
 func (user *User) GetId() bsonx.Val {
-
 	return bsonx.ObjectID(user.Id)
 }
